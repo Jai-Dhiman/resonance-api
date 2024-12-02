@@ -22,16 +22,17 @@ export class SpotifyService {
   }
 
   async searchArtist(query: string) {
-    try {
-      await this.refreshAccessToken();
-      const results = await this.spotifyApi.searchArtists(query, { limit: 5 });
-      return results.body.artists?.items;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new ApiError(`Failed to search artists: ${error.message}`, 500);
+    return this.retryWithNewToken(async () => {
+      try {
+        const results = await this.spotifyApi.searchArtists(query, { limit: 5 });
+        return results.body.artists?.items;
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new ApiError(`Failed to search artists: ${error.message}`, 500);
+        }
+        throw new ApiError('Failed to search artists', 500);
       }
-      throw new ApiError('Failed to search artists', 500);
-    }
+    });
   }
 
   async getArtistDetails(artistId: string) {
@@ -60,6 +61,18 @@ export class SpotifyService {
         throw new ApiError(`Failed to fetch artist details: ${error.message}`, 500);
       }
       throw new ApiError('Failed to fetch artist details', 500);
+    }
+  }
+
+  private async retryWithNewToken<T>(operation: () => Promise<T>): Promise<T> {
+    try {
+      return await operation();
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('token expired')) {
+        await this.refreshAccessToken();
+        return await operation();
+      }
+      throw error;
     }
   }
 }
