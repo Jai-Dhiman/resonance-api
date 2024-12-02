@@ -17,7 +17,9 @@
     "express-rate-limit": "^7.4.1",
     "node-pg-migrate": "^7.8.0",
     "pg": "^8.13.1",
-    "spotify-web-api-node": "^5.0.2"
+    "spotify-web-api-node": "^5.0.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -25,6 +27,8 @@
     "@types/node": "^20.11.0",
     "@types/pg": "^8.11.10",
     "@types/spotify-web-api-node": "^5.0.11",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.7",
     "nodemon": "^3.0.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
