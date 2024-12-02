@@ -1,0 +1,11 @@
+{
+  "dev": {
+    "driver": "pg",
+    "user": "jdhiman",
+    "password": "",
+    "host": "localhost",
+    "database": "resonance_db",
+    "port": 5432,
+    "migrations-dir": "./src/db/migrations"
+  }
+}
