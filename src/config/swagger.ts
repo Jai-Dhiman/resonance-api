@@ -7,17 +7,20 @@ const options = {
       title: 'Resonance API Documentation',
       version: '1.0.0',
       description: `
-        Welcome to the Resonance API documentation. This API provides access to music artist analytics
-        across various platforms, starting with Spotify integration.
-        
-        ## Authentication
-        All endpoints require a valid API key passed in the Authorization header.
-        
-        ## Rate Limiting
-        Requests are limited to 100 per 15 minutes per IP address.
-        
-        ## Error Handling
-        The API uses conventional HTTP response codes to indicate the success or failure of requests.
+Welcome to the Resonance API documentation. This API provides access to music artist analytics
+across various platforms, starting with Spotify integration.
+
+## Authentication
+This API requires Spotify OAuth credentials:
+- client_id: Your Spotify application client ID
+- client_secret: Your Spotify application client secret
+- redirect_url: Your application's redirect URL
+
+## Rate Limiting
+Requests are limited to 100 per 15 minutes per IP address.
+
+## Error Handling
+The API uses conventional HTTP response codes to indicate the success or failure of requests.
       `
     },
     servers: [
@@ -28,40 +31,83 @@ const options = {
     ],
     components: {
       schemas: {
-        Artist: {
+        SpotifyImage: {
           type: 'object',
           properties: {
-            id: {
+            url: {
               type: 'string',
-              description: 'Spotify artist ID',
-              example: '0TnOYISbd1XYRBk9myaseg'
+              description: 'Image URL'
             },
-            name: {
-              type: 'string',
-              description: 'Artist name',
-              example: 'Pitbull'
+            height: {
+              type: 'integer',
+              description: 'Image height',
+              nullable: true
+            },
+            width: {
+              type: 'integer',
+              description: 'Image width',
+              nullable: true
+            }
+          }
+        },
+        ArtistStats: {
+          type: 'object',
+          properties: {
+            popularity: {
+              type: 'integer',
+              description: 'Artist popularity score (0-100)',
+              example: 82
+            },
+            followers: {
+              type: 'integer',
+              description: 'Number of Spotify followers',
+              example: 1500000
             },
             genres: {
               type: 'array',
               items: {
                 type: 'string'
               },
-              description: 'List of genres associated with the artist',
-              example: ['dance pop', 'latin']
+              description: 'List of associated genres',
+              example: ['rock', 'classic rock']
             },
-            popularity: {
-              type: 'integer',
-              description: 'Popularity score from 0-100',
-              example: 82
+            name: {
+              type: 'string',
+              description: 'Artist name',
+              example: 'The Beatles'
             },
-            followers: {
-              type: 'object',
-              properties: {
-                total: {
-                  type: 'integer',
-                  description: 'Total number of followers',
-                  example: 1500000
-                }
+            images: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/SpotifyImage'
+              }
+            },
+            spotifyUrl: {
+              type: 'string',
+              description: 'Spotify artist page URL'
+            },
+            id: {
+              type: 'string',
+              description: 'Spotify artist ID'
+            },
+            lastUpdated: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Timestamp of when the stats were fetched'
+            }
+          }
+        }
+      },
+      securitySchemes: {
+        SpotifyOAuth: {
+          type: 'oauth2',
+          flows: {
+            authorizationCode: {
+              authorizationUrl: 'https://accounts.spotify.com/authorize',
+              tokenUrl: 'https://accounts.spotify.com/api/token',
+              scopes: {
+                'user-read-private': 'Read private user data',
+                'user-read-email': 'Read user email'
               }
             }
           }
@@ -96,8 +142,27 @@ const options = {
             }
           }
         },
+        UnauthorizedError: {
+          description: 'Authentication failed',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  status: { type: 'string', example: 'error' },
+                  message: { type: 'string', example: 'Invalid or missing API key' }
+                }
+              }
+            }
+          }
+        }
       }
-    }
+    },
+    security: [
+      {
+        SpotifyOAuth: []
+      }
+    ]
   },
   apis: ['./src/routes/*.ts']
 };
