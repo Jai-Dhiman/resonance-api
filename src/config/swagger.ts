@@ -81,7 +81,21 @@ const options = {
               }
             }
           }
-        }
+        },
+        RateLimitExceeded: {
+          description: 'Too many requests',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  status: { type: 'string', example: 'error' },
+                  message: { type: 'string', example: 'Rate limit exceeded. Try again later.' }
+                }
+              }
+            }
+          }
+        },
       }
     }
   },

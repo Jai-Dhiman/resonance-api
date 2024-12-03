@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { cache } from '../middleware/cache';
 import pool from '../db';
 
 const router = Router();
@@ -22,6 +23,13 @@ router.get('/db-test', async (req, res, next) => {
 
 router.get('/error-test', () => {
   throw new Error('Test error handling');
+});
+
+router.get('/cache-test', cache('1m'), (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    random: Math.random()
+  });
 });
 
 export { router as healthRouter };
