@@ -96,7 +96,48 @@ The API uses conventional HTTP response codes to indicate the success or failure
               description: 'Timestamp of when the stats were fetched'
             }
           }
-        }
+        },
+    ArtistTopTracks: {
+      type: 'object',
+      properties: {
+        tracks: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              name: { type: 'string' },
+              duration_ms: { type: 'number' },
+              popularity: { type: 'number' },
+              preview_url: { 
+                type: 'string',
+                nullable: true 
+              },
+              external_urls: {
+                type: 'object',
+                properties: {
+                  spotify: { type: 'string' }
+                }
+              },
+              album: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  images: {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/SpotifyImage'
+                    }
+                  },
+                  release_date: { type: 'string' }
+                }
+              }
+            }
+          }
+        },
+        lastUpdated: { type: 'string' }
+      }
+    },
       },
       securitySchemes: {
         SpotifyOAuth: {

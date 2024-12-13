@@ -1,7 +1,7 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 import { ApiError, NotFoundError } from '../utils/errors';
 import { redisService } from './RedisService';
-import { SpotifyArtist, ArtistStats } from '../types/spotify';
+import { SpotifyArtist, ArtistStats, ArtistTopTracks, RelatedArtist } from '../types/spotify';
 
 export class SpotifyService {
   private spotifyApi: SpotifyWebApi;
@@ -81,4 +81,23 @@ export class SpotifyService {
       throw new ApiError('Failed to process artist stats', 500);
     }
   }
+
+  async getArtistTopTracks(artistId: string): Promise<ArtistTopTracks> {
+    try {
+      const results = await this.retryWithNewToken(() =>
+        this.spotifyApi.getArtistTopTracks(artistId, 'US')
+      );
+
+      return {
+        tracks: results.body.tracks,
+        lastUpdated: new Date().toISOString()
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new ApiError(`Failed to fetch top tracks: ${error.message}`, 500);
+      }
+      throw new ApiError('Failed to fetch top tracks', 500);
+    }
+  }
+
 }

@@ -76,6 +76,57 @@ export function createArtistRouter(spotifyService: SpotifyService) {
     }
   });
 
+  /**
+ * @swagger
+ * /api/artists/{id}/top-tracks:
+ *   get:
+ *     summary: Get an artist's top tracks
+ *     description: |
+ *       Retrieves the top tracks for a specific artist from Spotify.
+ *       Results are cached for 30 minutes.
+ *     tags: [Artists]
+ *     security:
+ *       - SpotifyOAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Spotify Artist ID
+ *         example: "0TnOYISbd1XYRBk9myaseg"
+ *     responses:
+ *       200:
+ *         description: Artist's top tracks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ArtistTopTracks'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       429:
+ *         $ref: '#/components/responses/RateLimitExceeded'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+  router.get('/:id/top-tracks', cache('30m'), async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        throw new BadRequestError('Artist ID is required');
+      }
+      
+      const topTracks = await spotifyService.getArtistTopTracks(id);
+      res.json(topTracks);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   return router;
 }
 

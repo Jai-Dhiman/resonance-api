@@ -19,3 +19,24 @@ export interface ArtistStats {
   id: string;
   lastUpdated: string;
 }
+
+export interface TopTrack {
+  id: string;
+  name: string;
+  duration_ms: number;
+  popularity: number;
+  preview_url: string | null;
+  external_urls: {
+    spotify: string;
+  };
+  album: {
+    name: string;
+    images: SpotifyImage[];
+    release_date: string;
+  };
+}
+
+export interface ArtistTopTracks {
+  tracks: TopTrack[];
+  lastUpdated: string;
+}
