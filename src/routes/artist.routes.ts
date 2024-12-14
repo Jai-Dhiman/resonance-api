@@ -1,10 +1,12 @@
-
 import { Router } from 'express';
 import { SpotifyService } from '../services/SpotifyService';
 import { YouTubeService } from '../services/YouTubeService';
 import { cache } from '../middleware/cache';
 import { BadRequestError, NotFoundError } from '../utils/errors';
 import { SpotifyArtist } from '../types/spotify';
+import { rateLimiter } from '../middleware/rateLimiter';
+import { validate } from '../middleware/validate';
+import { artistSearchSchema, artistIdSchema } from '../validation/schemas';
 
 const youtubeService = new YouTubeService();
 
@@ -56,7 +58,9 @@ const youtubeService = new YouTubeService();
 export function createArtistRouter(spotifyService: SpotifyService) {
   const router = Router();
 
-  router.get('/search', cache('5m'), async (req, res, next) => {
+  router.get('/search', rateLimiter(100, '15m'),
+  validate(artistSearchSchema),
+  cache('5m'), async (req, res, next) => {
     try {
       const { q } = req.query;
       if (!q || typeof q !== 'string') {
@@ -115,7 +119,9 @@ export function createArtistRouter(spotifyService: SpotifyService) {
  *       500:
  *         $ref: '#/components/responses/ServerError'
  */
-  router.get('/:id/top-tracks', cache('30m'), async (req, res, next) => {
+  router.get('/:id/top-tracks',rateLimiter(300, '15m'),
+  validate(artistIdSchema),
+  cache('30m'), async (req, res, next) => {
     try {
       const { id } = req.params;
       if (!id) {
