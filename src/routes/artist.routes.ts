@@ -1,10 +1,12 @@
 
 import { Router } from 'express';
 import { SpotifyService } from '../services/SpotifyService';
+import { YouTubeService } from '../services/YouTubeService';
 import { cache } from '../middleware/cache';
 import { BadRequestError, NotFoundError } from '../utils/errors';
 import { SpotifyArtist } from '../types/spotify';
 
+const youtubeService = new YouTubeService();
 
 /**
  * @swagger
@@ -126,6 +128,49 @@ export function createArtistRouter(spotifyService: SpotifyService) {
       next(error);
     }
   });
+
+router.get('/:id/youtube-stats', cache('5m'), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      throw new BadRequestError('Artist ID is required');
+    }
+    const artist = await spotifyService.getArtist(id); 
+    const artistStats = await spotifyService.getArtistStats(artist);
+    
+    const youtubeChannel = await youtubeService.findArtistChannel(artistStats.name);
+    if (!youtubeChannel || !youtubeChannel.id) {
+      return res.json({ 
+        channelFound: false,
+        stats: null 
+      });
+    }
+
+    const channelId = typeof youtubeChannel.id === 'string' 
+      ? youtubeChannel.id 
+      : youtubeChannel.id.channelId;
+      
+    if (!channelId) {
+      return res.json({ 
+        channelFound: false,
+        stats: null 
+      });
+    }
+
+    const youtubeStats = await youtubeService.getChannelStats(channelId);
+    
+    res.json({
+      channelFound: true,
+      channelId: channelId,
+      channelTitle: youtubeChannel.snippet?.title,
+      channelThumbnail: youtubeChannel.snippet?.thumbnails?.default?.url,
+      stats: youtubeStats
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+});
 
   return router;
 }

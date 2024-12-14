@@ -1,7 +1,7 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 import { ApiError, NotFoundError } from '../utils/errors';
 import { redisService } from './RedisService';
-import { SpotifyArtist, ArtistStats, ArtistTopTracks, RelatedArtist } from '../types/spotify';
+import { SpotifyArtist, ArtistStats, ArtistTopTracks } from '../types/spotify';
 
 export class SpotifyService {
   private spotifyApi: SpotifyWebApi;
@@ -57,6 +57,18 @@ export class SpotifyService {
         throw new ApiError(`Failed to search artists: ${error.message}`, 500);
       }
       throw new ApiError('Failed to search artists', 500);
+    }
+  }
+
+  async getArtist(id: string): Promise<SpotifyApi.ArtistObjectFull> {
+    try {
+      const artist = await this.spotifyApi.getArtist(id);
+      return artist.body;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new ApiError(`Failed to fetch artist: ${error.message}`, 500);
+      }
+      throw new ApiError('Failed to fetch artist', 500);
     }
   }
 
