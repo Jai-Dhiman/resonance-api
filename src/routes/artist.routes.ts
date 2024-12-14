@@ -129,6 +129,71 @@ export function createArtistRouter(spotifyService: SpotifyService) {
     }
   });
 
+  /**
+ * @swagger
+ * /api/artists/{id}/youtube-stats:
+ *   get:
+ *     summary: Get an artist's YouTube channel statistics
+ *     description: |
+ *       Retrieves YouTube channel statistics for an artist based on their Spotify profile.
+ *       First finds the artist's YouTube channel, then fetches detailed statistics.
+ *       Results are cached for 5 minutes.
+ *     tags: [Artists]
+ *     security:
+ *       - SpotifyOAuth: []
+ *       - YouTubeAPI: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Spotify Artist ID
+ *         example: "0TnOYISbd1XYRBk9myaseg"
+ *     responses:
+ *       200:
+ *         description: Artist's YouTube channel statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 channelFound:
+ *                   type: boolean
+ *                   description: Indicates if a matching YouTube channel was found
+ *                 channelId:
+ *                   type: string
+ *                   description: YouTube channel ID
+ *                 channelTitle:
+ *                   type: string
+ *                   description: YouTube channel name
+ *                 channelThumbnail:
+ *                   type: string
+ *                   description: URL of channel thumbnail
+ *                 stats:
+ *                   type: object
+ *                   properties:
+ *                     subscriberCount:
+ *                       type: string
+ *                       description: Number of channel subscribers
+ *                     viewCount:
+ *                       type: string
+ *                       description: Total channel views
+ *                     videoCount:
+ *                       type: string
+ *                       description: Total number of uploaded videos
+ *                   nullable: true
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       429:
+ *         $ref: '#/components/responses/RateLimitExceeded'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get('/:id/youtube-stats', cache('5m'), async (req, res, next) => {
   try {
     const { id } = req.params;

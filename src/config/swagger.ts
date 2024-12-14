@@ -4,10 +4,10 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Resonance API Documentation',
+      title: 'Artist Analytics API Documentation',
       version: '1.0.0',
       description: `
-Welcome to the Resonance API documentation. This API provides access to music artist analytics
+Welcome to the Artist Analytics API documentation. This API provides access to music artist analytics
 across various platforms, starting with Spotify integration.
 
 ## Authentication
@@ -152,6 +152,12 @@ The API uses conventional HTTP response codes to indicate the success or failure
               }
             }
           }
+        },
+        YouTubeAPI: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'X-YouTube-API-Key',
+          description: 'YouTube Data API key'
         }
       },
       responses: {
