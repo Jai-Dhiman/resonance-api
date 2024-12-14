@@ -62,8 +62,10 @@ export class SpotifyService {
 
   async getArtist(id: string): Promise<SpotifyApi.ArtistObjectFull> {
     try {
-      const artist = await this.spotifyApi.getArtist(id);
-      return artist.body;
+      const results = await this.retryWithNewToken(() =>
+        this.spotifyApi.getArtist(id)
+      );
+      return results.body;
     } catch (error) {
       if (error instanceof Error) {
         throw new ApiError(`Failed to fetch artist: ${error.message}`, 500);
