@@ -48,9 +48,13 @@ CACHE_TTL=3600
 # Installation
 
 Clone the repository
+
 Install dependencies: npm install
+
 Set up environment variables
+
 Run database migrations: npm run migrate
+
 Start development server: npm run dev
 
 # API Endpoints
@@ -58,7 +62,9 @@ Start development server: npm run dev
 Artist Routes
 
 GET /api/artist/search?q={query} - Search for artists
+
 GET /api/artist/:id/top-tracks - Get top tracks for an artist
+
 GET /api/artist/:id/youtube-stats - get youtube analytics based upon the spotify id for an artist
 
 Health Check
@@ -68,15 +74,21 @@ GET /health - Service health check endpoint
 # Features
 
 Request validation using JSON schemas
+
 Redis caching for API responses
+
 Rate limiting for API endpoints
+
 Error handling middleware
+
 Normalized response formats
 
 # Development
 
 Run tests: npm test
+
 Run linter: npm run lint
+
 Build project: npm run build
 
 # Deployment
