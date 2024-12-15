@@ -5,10 +5,30 @@ export class RedisService {
   private client: Redis;
   
   constructor() {
-    this.client = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    const options = {
+      retryStrategy(times: number) {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
+      maxRetriesPerRequest: 5,
+      enableReadyCheck: true,
+      reconnectOnError(err: Error) {
+        const targetError = 'READONLY';
+        if (err.message.includes(targetError)) {
+          return true;
+        }
+        return false;
+      }
+    };
+
+    this.client = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', options);
     
     this.client.on('error', (err) => {
       console.error('Redis Client Error:', err);
+    });
+
+    this.client.on('connect', () => {
+      console.log('Successfully connected to Redis');
     });
   }
 
