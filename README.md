@@ -12,19 +12,6 @@ A backend service for a Artist Analytics Dashboard that aggregates and serves ar
   - Spotify Web API
   - YouTube Data API
 
-## Project Structure
-
-resonance-api/
-├── tests/ # Test files following source structure
-├── db/ # Database configuration and migrations
-├── middleware/ # Express middleware (caching, rate limiting, etc.)
-├── routes/ # API route definitions
-├── services/ # Core business logic and external API integrations
-├── types/ # TypeScript type definitions
-├── utils/ # Helper functions and utilities
-├── validation/ # Request validation schemas
-└── index.ts # Application entry point
-
 ## Getting Started
 
 ### Prerequisites
@@ -58,7 +45,7 @@ CACHE_TTL=3600
 
 ```
 
-Installation
+# Installation
 
 Clone the repository
 Install dependencies: npm install
@@ -66,7 +53,8 @@ Set up environment variables
 Run database migrations: npm run migrate
 Start development server: npm run dev
 
-API Endpoints
+# API Endpoints
+
 Artist Routes
 
 GET /api/artist/search?q={query} - Search for artists
@@ -77,7 +65,7 @@ Health Check
 
 GET /health - Service health check endpoint
 
-Features
+# Features
 
 Request validation using JSON schemas
 Redis caching for API responses
@@ -85,12 +73,13 @@ Rate limiting for API endpoints
 Error handling middleware
 Normalized response formats
 
-Development
+# Development
 
 Run tests: npm test
 Run linter: npm run lint
 Build project: npm run build
 
-Deployment
+# Deployment
+
 The API is containerized using Docker and deployed on Railway:
 https://artistanalytics.up.railway.app/
